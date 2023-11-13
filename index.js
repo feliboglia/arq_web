@@ -249,9 +249,28 @@ app.post('/projects', async  (req, res) => {
   }
 });
 
+// Traer todos los proyectos
+app.get("/projects", async (req, res) => {
+  try {
+    const projects = await Project.find({});
+    let projectList = '';
+    projects.forEach((p) => {
+      projectList += `Project ID: ${p.projectId}\n Name: ${p.name} \n Note IDs: ${p.notes}\n Creator: ${p.owner} \n`;
+    }); 
+    res.status(200).send(projectList);
+  }
+  catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 // Traer notas de un proyecto por projectId
 app.get('/projects/:projectId/notes', async (req, res) => {
   const projectId = req.params.projectId;
+  const noteIds = req.body.notes; // assuming noteId is an array of numbers
+  const notes = [];
+
+  //console.log(noteIds);
 
   try { 
     const project = await Project.findOne({ projectId });
@@ -260,7 +279,16 @@ app.get('/projects/:projectId/notes', async (req, res) => {
       return res.status(404).json({ error: 'Project not found.' });
     }
 
-    const notes = await Note.find({ noteId: { $in: project.notes } });
+    for (let index = 0; index < noteIds.length; ++index){
+      const id = noteIds[index];
+
+      //console.log(id);
+      const note = await Note.find({ noteId: id });
+      if (note) {
+          notes.push(note);
+      }
+    }
+
     res.json(notes);
   } catch (error) {
     res.status(400).send(error);
@@ -289,3 +317,13 @@ app.put('/projects/:projectId/notes', async (req, res) => {
   }
 });
 
+// Borrar proyecto por projectId
+app.delete('/projects/:projectId', async (req, res) => {
+  const projectId = req.params.projectId;
+  try {
+		await Project.deleteOne({projectId})
+    res.json("Proyecto eliminado correctamente!");
+	} catch (error) {
+		res.status(400).send(error);
+	}
+})
