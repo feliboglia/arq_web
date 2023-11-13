@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 
 const { Note, User, Project } = require('./mongoose_models.js');
 
@@ -131,24 +131,11 @@ app.put("/notes/:noteId", async (req, res) => {
   }
 });
 
-/*
 // Borrar nota por noteId
 app.delete('/notes/:noteId', async (req, res) => {
   const noteId = req.params.noteId;
   try {
 		await Note.deleteOne({noteId})
-    res.json("Nota eliminada correctamente!");
-	} catch (error) {
-		res.status(400).send(error);
-	}
-})
-*/
-
-// Borrar nota por titulo
-app.delete('/notes/:title', async (req, res) => {
-  const title = req.params.title;
-  try {
-		await Note.deleteOne({title})
     res.json("Nota eliminada correctamente!");
 	} catch (error) {
 		res.status(400).send(error);
